@@ -1,11 +1,11 @@
 # ros1-docker
 Docker image for ROS1 system with XRDP and SSH support
-- Based on Ubuntu 20.04, with ```ros-noetic-desktop-full``` and related packaged installed.
+- Based on Ubuntu 20.04, with ```ros-noetic-desktop-full``` and related packages installed.
 - XRDP with XFCE desktop environment.
 - OpenSSH server configured.
 
 # default settings
-Default username and password is ros:ros
+Default username and password is ```ros:ros```
 
 # build docker image
 ```
