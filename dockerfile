@@ -41,10 +41,18 @@ RUN curl -sSL 'http://packages.ros.org/ros.key' | apt-key add - && \
     echo 'Acquire::https::mirrors.ustc.edu.cn::Verify-Peer "false";' >> /etc/apt/apt.conf.d/99disable-verify-peer && \
     apt-get update && \
     apt-get install -y ros-noetic-desktop-full python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential && \
-    echo "source /opt/ros/noetic/setup.bash" >> /home/ros/.bashrc
+    echo "source /opt/ros/noetic/setup.bash" >> /home/ros/.bashrc \
+    echo 'export ROSDISTRO_INDEX_URL=https://mirrors.ustc.edu.cn/rosdistro/index-v4.yaml' >> ~/.bashrc
 
 # Source ROS setup script and initialize rosdep
-RUN bash -c "source /opt/ros/noetic/setup.bash && sudo rosdep fix-permissions && rosdep init && rosdep update"
+RUN bash -c "source /opt/ros/noetic/setup.bash && sudo rosdep fix-permissions"
+# Following cmds replaced `rosdep init` and `rosdep update` to use USTC mirrors, to avoid accessing github raw site.
+# If you prefer the official way, replace these lines with `rosdep init` and `rosdep update`
+RUN sudo mkdir -p /etc/ros/rosdep/sources.list.d/ && \
+    sudo curl -o /etc/ros/rosdep/sources.list.d/20-default.list https://mirrors.ustc.edu.cn/rosdistro/rosdep/sources.list.d/20-default.list && \
+    sudo sed -i 's#raw.githubusercontent.com/ros/rosdistro/master#mirrors.ustc.edu.cn/rosdistro#g' /etc/ros/rosdep/sources.list.d/20-default.list && \
+    su ros -c 'ROSDISTRO_INDEX_URL=https://mirrors.ustc.edu.cn/rosdistro/index-v4.yaml rosdep update' 
+
 
 # Enable SSH service
 RUN systemctl enable ssh
@@ -58,3 +66,4 @@ EXPOSE 3389 22
 
 # Set the entrypoint
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
