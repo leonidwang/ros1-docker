@@ -34,3 +34,8 @@ docker run --rm -d -p 3389:3389 -p 22:22 --name ros ros1-docker
 ```
 docker stop ros
 ```
+
+# application sandbox workaround
+Applications like VisualStudio Code, Chromium requres sandbox which usually won't be satisfied in default docker environment.
+Start docker with this option ```--security-opt seccomp=unconfined``` could resolve this.
+Or start the application with no-sandbox option, such as ```code --no-sandbox```.
